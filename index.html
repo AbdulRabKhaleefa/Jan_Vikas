@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MGNREGA District Dashboard</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="nav-container">
+      <h1 class="nav-title">🇮🇳 MGNREGA Dashboard</h1>
+      <img src="https://upload.wikimedia.org/wikipedia/en/4/41/Flag_of_India.svg" alt="Indian Flag" class="flag-icon" />
+      <ul class="nav-links">
+        <li><a href="#home" data-key="home">🏠 Home</a></li>
+        <li><a href="#district-data" data-key="districtData">📍 District Data</a></li>
+        <li><a href="#compare" data-key="compare">📊 Compare</a></li>
+        <li><a href="#about" data-key="about">ℹ️ About MGNREGA</a></li>
+        <li><a href="#contact" data-key="contact">📞 Contact</a></li>
+        <li><a href="#feedback" data-key="feedback">⭐ Feedback</a></li>
+        <li><a href="#updates" data-key="updates">📰 Updates</a></li>
+      </ul>
+      <select id="languageSelect">
+        <option value="en">English</option>
+        <option value="hi">हिंदी</option>
+        <option value="kn">ಕನ್ನಡ</option>
+      </select>
+      <button id="darkModeToggle" title="Toggle Dark Mode">🌙 Dark Mode</button>
+      <button id="printBtn" title="Print This Page">🖨️ Print</button>
+    </div>
+  </nav>
+
+  <section class="hero">
+    <div class="hero-overlay">
+      <h2>Empowering Rural India 🇮🇳</h2>
+      <p>MGNREGA provides guaranteed employment, dignity, and development to millions of households.</p>
+      <p><strong>12+ crore beneficiaries • 2.5 lakh Gram Panchayats • ₹80,000+ crore budget</strong></p>
+      <div class="impact-details">
+        <h3>Impact Highlights</h3>
+        <ul>
+          <li>Over 300 crore person-days of employment generated in 2022-23</li>
+          <li>55% female participation, empowering rural women</li>
+          <li>Built durable assets like roads, ponds, and irrigation canals</li>
+          <li>Reduced rural poverty and migration significantly</li>
+        </ul>
+      </div>
+    </div>
+    <!-- Sliding Images Background -->
+    <div class="sliding-images">
+      <img src="https://upload.wikimedia.org/wikipedia/en/4/41/Flag_of_India.svg" alt="Indian Flag" class="slide-flag" />
+      <img src="https://globalwiki.org/images/3/3e/Narendra-Modi.jpeg" alt="Narendra Modi" class="slide-modi" />
+      <img src="https://thebestbiography.com/wp-content/uploads/2024/01/image-378-1024x683.png" alt="President of India" class="slide-president" />
+    </div>
+  </section>
+
+  <section id="home" class="section">
+    <h1 data-key="welcomeTitle">Welcome to MGNREGA District Performance</h1>
+    <p data-key="welcomeDesc">See your district's info - Powered by Government of India</p>
+    <button id="autoDetectBtn" data-key="detectBtn" title="Detect your location and district">Detect My District</button>
+    <div id="map"></div>
+    <p data-key="homeExtra">Explore India's largest welfare program with real-time data and comparisons.</p>
+  </section>
+
+  <section id="district-data" class="section">
+    <h2 data-key="districtDataTitle">District Data</h2>
+    <input type="text" id="searchBar" placeholder="Search District..." data-key="searchPlaceholder" />
+    <label for="districtSelect" data-key="selectDistrictLabel">Select District:</label>
+    <select id="districtSelect"><option value="">Loading...</option></select>
+    <div id="loadingSpinner" class="spinner hidden"></div>
+    <p id="errorMsg" class="error hidden" data-key="errorMsg">Error loading data. Please try again.</p>
+    <div id="dataDisplay" class="card hidden">
+      <h3 id="districtTitle"></h3>
+      <div class="progress-bar"><div class="progress" style="width: 75%;"></div></div>
+      <div class="tabs">
+        <button class="tab active" data-tab="current" data-key="currentTab">Current</button>
+        <button class="tab" data-tab="past" data-key="pastTab">Past</button>
+      </div>
+      <div id="currentTab" class="tab-content">
+        <canvas id="metricsChart"></canvas>
+        <ul id="metricsList"></ul>
+        <button id="audioExplain" data-key="audioBtn" title="Hear metrics aloud">🔊 Audio Explanation</button>
+        <button id="downloadReport" data-key="downloadBtn" title="Download metrics as text">📥 Download Report</button>
+        <button id="resetBtn" title="Reset selection">🔄 Reset</button>
+      </div>
+      <div id="pastTab" class="tab-content hidden">
+        <canvas id="pastChart"></canvas>
+      </div>
+    </div>
+  </section>
+
+  <section id="compare" class="section">
+    <h2 data-key="compareTitle">Compare Districts</h2>
+    <form id="compareForm">
+      <label data-key="compareLabel">Select Districts to Compare:</label>
+      <select id="compareSelect1"><option>Loading...</option></select>
+      <select id="compareSelect2"><option>Loading...</option></select>
+      <button type="submit" data-key="compareSubmit" title="Compare selected districts">Compare</button>
+    </form>
+    <div id="compareDisplay" class="card hidden">
+      <canvas id="compareChart"></canvas>
+      <p data-key="compareExtra">See how your district stacks up against others for better insights.</p>
+    </div>
+  </section>
+
+  <section id="about" class="section">
+    <h2 data-key="aboutTitle">About MGNREGA</h2>
+    <p id="aboutDesc" data-key="aboutDesc">
+      MGNREGA (Mahatma Gandhi National Rural Employment Guarantee Act) is a transformative social security scheme launched in 2006. It guarantees 100 days of wage employment per year to rural households, aiming to enhance livelihood security. The scheme empowers communities, reduces migration, and builds durable assets like roads, ponds, irrigation canals, and rural infrastructure. With over 2.5 lakh Gram Panchayats covered, MGNREGA has become a cornerstone of inclusive development in India. Key impacts include poverty reduction, women's empowerment (with 55% female participation), and environmental benefits through water conservation and afforestation. In 2022-23, it generated over 300 crore person-days of employment, disbursing ₹50,000+ crores in wages. Challenges include timely payments and asset quality, but ongoing reforms are addressing these.
+    </p>
+  </section>
+
+  <section id="contact" class="section">
+    <h2 data-key="contactTitle">Contact Us</h2>
+    <p data-key="contactDesc">Reach local officials or support for MGNREGA queries.</p>
+    <form id="contactForm">
+      <input type="text" placeholder="Name" data-key="namePlaceholder" required aria-label="Name" />
+      <input type="email" placeholder="Email" data-key="emailPlaceholder" required aria-label="Email" />
+      <textarea placeholder="Message" data-key="messagePlaceholder" required aria-label="Message"></textarea>
+      <button type="submit" data-key="sendBtn" title="Send your message">Send</button>
+    </form>
+    <p data-key="contactInfo">Phone: 1800-XXX-XXXX | Email: support@mgnrega.gov.in</p>
+  </section>
+
+  <section id="feedback" class="section">
+    <h2 data-key="feedbackTitle">Feedback</h2>
+    <p data-key="feedbackDesc">Rate our dashboard and share your thoughts!</p>
+    <div id="rating">
+      <span data-key="rateUs">Rate Us:</span>
+      <span class="star" data-rating="1">⭐</span>
+      <span class="star" data-rating="2">⭐</span>
+      <span class="star" data-rating="3">⭐</span>
+      <span class="star" data-rating="4">⭐</span>
+      <span class="star" data-rating="5">⭐</span>
+    </div>
+    <p id="avgRating" data-key="avgRating">Average Rating: 0/5</p>
+    <textarea id="feedbackText" placeholder="Your feedback..." data-key="feedbackPlaceholder"></textarea>
+    <button id="submitFeedback" data-key="submitFeedbackBtn">Submit Feedback</button>
+  </section>
+
+  <section id="updates" class="section">
+    <h2 data-key="updatesTitle">Latest Updates</h2>
+    <div id="newsList"></div>
+  </section>
+
+  <footer>
+    <p data-key="footer">&copy; 2023 MGNREGA Dashboard. Made by ABDUL RAB KHALEEFA. Data from data.gov.in.</p>
+    <button id="shareBtn" title="Share this page">📤 Share</button>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
